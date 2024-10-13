@@ -57,6 +57,16 @@ public class SareetaApplicationTests {
     }
 
     @Test
+    public void testCreateUserFail() throws Exception {
+        String username = generateUsername();
+        String password = "test";
+        CreateUserRequest userRequest = createUserRequest(username, password);
+
+        ResponseEntity<User> response = userController.createUser(userRequest);
+        Assert.assertEquals(400, response.getStatusCodeValue());
+    }
+
+    @Test
     public void testGetUserById() throws Exception {
         String username = generateUsername();
         String password = "test1234";
@@ -70,6 +80,12 @@ public class SareetaApplicationTests {
         Assert.assertEquals(createUserResponse.getBody().getId(), response.getBody().getId());
         Assert.assertEquals(createUserResponse.getBody().getUsername(), response.getBody().getUsername());
         Assert.assertEquals(createUserResponse.getBody().getPassword(), response.getBody().getPassword());
+    }
+
+    @Test
+    public void testGetUserByIdNotFound() throws Exception {
+        ResponseEntity<User> response = userController.findById(100L);
+        Assert.assertEquals(404, response.getStatusCodeValue());
     }
 
     @Test
@@ -89,6 +105,14 @@ public class SareetaApplicationTests {
     }
 
     @Test
+    public void testGetUserByUserNameNotFound() throws Exception {
+        String username = generateUsername();
+
+        ResponseEntity<User> response = userController.findByUserName(username);
+        Assert.assertEquals(404, response.getStatusCodeValue());
+    }
+
+    @Test
     public void testAddToCart() throws Exception {
         String username = generateUsername();
         String password = "test1234";
@@ -103,6 +127,15 @@ public class SareetaApplicationTests {
     }
 
     @Test
+    public void testAddToCartFail() throws Exception {
+        String username = generateUsername();
+
+        ModifyCartRequest cartRequest = createCartRequest(username);
+        ResponseEntity<Cart> response = cartController.addTocart(cartRequest);
+        Assert.assertEquals(404, response.getStatusCodeValue());
+    }
+
+    @Test
     public void testRemoveFromCart() throws Exception {
         String username = generateUsername();
         String password = "test1234";
@@ -114,6 +147,15 @@ public class SareetaApplicationTests {
         ResponseEntity<Cart> response = cartController.removeFromcart(cartRequest);
         Assert.assertEquals(200, response.getStatusCodeValue());
         Assert.assertNotNull(response.getBody());
+    }
+
+    @Test
+    public void testRemoveFromCartFail() throws Exception {
+        String username = generateUsername();
+
+        ModifyCartRequest cartRequest = createCartRequest(username);
+        ResponseEntity<Cart> response = cartController.removeFromcart(cartRequest);
+        Assert.assertEquals(404, response.getStatusCodeValue());
     }
 
     @Test
@@ -132,11 +174,23 @@ public class SareetaApplicationTests {
     }
 
     @Test
+    public void testGetItemByIdNotFound() throws Exception {
+        ResponseEntity<Item> response = itemController.getItemById(100L);
+        Assert.assertEquals(404, response.getStatusCodeValue());
+    }
+
+    @Test
     public void testGetItemsByName() throws Exception {
         ResponseEntity<List<Item>> response = itemController.getItemsByName("Round Widget");
         Assert.assertEquals(200, response.getStatusCodeValue());
         Assert.assertNotNull(response.getBody());
         Assert.assertFalse(response.getBody().isEmpty());
+    }
+
+    @Test
+    public void testGetItemsByNameNotFound() throws Exception {
+        ResponseEntity<List<Item>> response = itemController.getItemsByName("name");
+        Assert.assertEquals(404, response.getStatusCodeValue());
     }
 
     @Test
@@ -154,6 +208,14 @@ public class SareetaApplicationTests {
         ResponseEntity<UserOrder> response = orderController.submit(username);
         Assert.assertEquals(200, response.getStatusCodeValue());
         Assert.assertNotNull(response.getBody());
+    }
+
+    @Test
+    public void testSubmitOrderFail() throws Exception {
+        String username = generateUsername();
+
+        ResponseEntity<UserOrder> response = orderController.submit(username);
+        Assert.assertEquals(404, response.getStatusCodeValue());
     }
 
     @Test
@@ -175,6 +237,14 @@ public class SareetaApplicationTests {
         Assert.assertEquals(200, response.getStatusCodeValue());
         Assert.assertNotNull(response.getBody());
         Assert.assertFalse(response.getBody().isEmpty());
+    }
+
+    @Test
+    public void testGetOrdersForUserNotFound() throws Exception {
+        String username = generateUsername();
+
+        ResponseEntity<List<UserOrder>> response = orderController.getOrdersForUser(username);
+        Assert.assertEquals(404, response.getStatusCodeValue());
     }
 
     private ModifyCartRequest createCartRequest(String username) {
